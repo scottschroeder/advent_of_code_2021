@@ -1,5 +1,4 @@
-use anyhow::Result;
-
+use anyhow::{Context, Result};
 
 pub fn part1(input: &str) -> Result<String> {
     let x = 0;
@@ -11,6 +10,15 @@ pub fn part2(input: &str) -> Result<String> {
     Ok(format!("{:?}", x))
 }
 
+fn parse(input: &str) -> Result<Vec<i64>> {
+    input
+        .lines()
+        .map(|l| {
+            l.parse::<i64>()
+                .with_context(|| format!("could not parse number: {:?}", l))
+        })
+        .collect()
+}
 
 #[cfg(test)]
 mod tests {
@@ -24,6 +32,5 @@ mod tests {
     #[test]
     fn verify_p2() {
         assert_eq!(part2(INPUT).unwrap().as_str(), "0")
-
     }
 }
