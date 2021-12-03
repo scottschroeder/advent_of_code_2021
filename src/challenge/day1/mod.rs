@@ -1,5 +1,4 @@
-use anyhow::Context;
-use anyhow::Result;
+use anyhow::{Context, Result};
 
 pub fn part1(input: &str) -> Result<String> {
     let sonar = parse(input)?;
