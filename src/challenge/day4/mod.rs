@@ -3,18 +3,7 @@ use anyhow::{Context, Result};
 mod bingo;
 
 pub fn part1(input: &str) -> Result<String> {
-    let (called, cards) = parse(input)?;
-    log::trace!("called: {:?}", called);
-    log::trace!("cards: {:?}", cards);
-
-    let mut mb = bingo::MultiBingo::default();
-
-    for card in cards.chunks_exact(bingo::BINGO_LEN) {
-        mb.add_card(card);
-    }
-
-    let w = mb
-        .iter(called.iter().cloned())
+    let w = iterate_bingo_winners(input)?
         .next()
         .ok_or_else(|| anyhow::anyhow!("no winner"))?;
 
@@ -22,22 +11,22 @@ pub fn part1(input: &str) -> Result<String> {
 }
 
 pub fn part2(input: &str) -> Result<String> {
+    let w = iterate_bingo_winners(input)?
+        .last()
+        .ok_or_else(|| anyhow::anyhow!("no winner"))?;
+
+    Ok(format!("{}", w))
+}
+
+fn iterate_bingo_winners(input: &str) -> Result<impl Iterator<Item = u64>> {
     let (called, cards) = parse(input)?;
-    log::trace!("called: {:?}", called);
-    log::trace!("cards: {:?}", cards);
 
     let mut mb = bingo::MultiBingo::default();
 
     for card in cards.chunks_exact(bingo::BINGO_LEN) {
         mb.add_card(card);
     }
-
-    let w = mb
-        .iter(called.iter().cloned())
-        .last()
-        .ok_or_else(|| anyhow::anyhow!("no winner"))?;
-
-    Ok(format!("{}", w))
+    Ok(mb.iter(called.into_iter()))
 }
 
 fn parse(input: &str) -> Result<(Vec<u8>, Vec<u8>)> {

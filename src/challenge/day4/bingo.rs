@@ -38,13 +38,6 @@ impl BingoCard {
         if self.check_range(self.col(p.x as usize)) {
             return true;
         }
-        // if p.x == p.y && self.check_range(self.diagonal_down()) {
-        //     return true;
-        // }
-        // if p.x == BINGO_HEIGHT as i64 - p.y && self.check_range(self.diagonal_up()) {
-        //     return true;
-        // }
-
         false
     }
 
@@ -168,23 +161,23 @@ impl MultiBingo {
         win
     }
     pub fn get_winner_details(&self, card_idx: usize) -> u64 {
-        log::debug!("winner: \n{}", self.cards[card_idx].marks);
+        log::trace!("winner: Card #{}\n{}", card_idx, self.cards[card_idx].marks);
         self.unmarked_at_card(card_idx)
             .map(|x| x as u64)
             .sum::<u64>()
     }
 
-    pub fn iter<I: Iterator<Item = u8>>(&mut self, iter: I) -> BingoWinners<I> {
+    pub fn iter<I: Iterator<Item = u8>>(self, iter: I) -> BingoWinners<I> {
         BingoWinners { iter, bingo: self }
     }
 }
 
-pub struct BingoWinners<'a, I> {
+pub struct BingoWinners<I> {
     iter: I,
-    bingo: &'a mut MultiBingo,
+    bingo: MultiBingo,
 }
 
-impl<'a, I: Iterator<Item = u8>> Iterator for BingoWinners<'a, I> {
+impl<I: Iterator<Item = u8>> Iterator for BingoWinners<I> {
     type Item = u64;
 
     fn next(&mut self) -> Option<Self::Item> {
